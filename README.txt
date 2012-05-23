@@ -10,4 +10,4 @@ Documentation for each class is created using Doxygen-style comments placed in e
 
 To use the library, See the includes you need for each of these files.
 
-Want a library for a device that isn't up on the repository? Request it, or fork the code and contribute! Better yet, send me a device on a breakout board to test the code during development. No guarantees on how fast I can get it done, but I'd love to make good consistent and well-documented library on STM32F103xx platform.
+Want a library for a device that isn't up on the repository? Request it, or fork the code and contribute! Better yet, send me a device on a breakout board to test the code during development. No guarantees on how fast I can get it done, but I'd love to make good consistent and well-documented library for ARM STM32F103xx platform.
