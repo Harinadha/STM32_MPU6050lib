@@ -334,7 +334,7 @@ void MPU6050_I2C_Init(void)
 
 /**
 * @brief  Writes one byte to the  MPU6050.
-* @param  slaveAddr : slave address MPU6050_A_I2C_ADDRESS or MPU6050_M_I2C_ADDRESS
+* @param  slaveAddr : slave address MPU6050_DEFAULT_ADDRESS
 * @param  pBuffer : pointer to the buffer  containing the data to be written to the MPU6050.
 * @param  writeAddr : address of the register in which the data will be written
 * @return None
@@ -376,7 +376,7 @@ void MPU6050_I2C_ByteWrite(u8 slaveAddr, u8* pBuffer, u8 writeAddr)
 
 /**
 * @brief  Reads a block of data from the MPU6050.
-* @param  slaveAddr  : slave address MPU6050_A_I2C_ADDRESS or MPU6050_M_I2C_ADDRESS
+* @param  slaveAddr  : slave address MPU6050_DEFAULT_ADDRESS
 * @param  pBuffer : pointer to the buffer that receives the data read from the MPU6050.
 * @param  readAddr : MPU6050's internal address to read from.
 * @param  NumByteToRead : number of bytes to read from the MPU6050 ( NumByteToRead >1  only for the Mgnetometer readinf).
