@@ -6,7 +6,7 @@ The MPU6050 I2C Device Library provideS simple and intuitive interfaces to MPU60
 
 The code is written primarily to support the MPU6050 I2C device implementation, but it may be useful to extend it to other I2C devices.
 
-Documentation for each class is created using Doxygen-style comments placed in each class definition file, based on the information available in device's datasheet. This documentation will be available in HTML format on the http://harinadha.wordpress.com website, which also holds helpful information for some problems i faced in implementing this library.
+Documentation is created using Doxygen-style comments placed in each definition file, based on the information available in device's datasheet. This documentation will be available in HTML format on the http://harinadha.wordpress.com website, which also holds helpful information for some problems i faced in implementing this library.
 
 This library depends on only the following header files from STM32F10xFWLib v3.3.0:
 
