@@ -28,8 +28,13 @@ THE SOFTWARE.
 ================================================================================================
 */
 
+/* Includes */
 #include "MPU6050.h"
 #include "stm32f10x_i2c.h"
+
+/** @defgroup MPU6050_Library
+* @{
+*/
 
 /** Power on and prepare for general usage.
  * This will activate the device and take it out of sleep mode (which must be done
@@ -38,7 +43,8 @@ THE SOFTWARE.
  * the clock source to use the X Gyro for reference, which is slightly better than
  * the default internal clock source.
  */
-void MPU6050_Initialize() {
+void MPU6050_Initialize() 
+{
     MPU6050_SetClockSource(MPU6050_CLOCK_PLL_XGYRO);
     MPU6050_SetFullScaleGyroRange(MPU6050_GYRO_FS_250);
     MPU6050_SetFullScaleAccelRange(MPU6050_ACCEL_FS_2);
@@ -49,7 +55,8 @@ void MPU6050_Initialize() {
  * Make sure the device is connected and responds as expected.
  * @return True if connection is valid, FALSE otherwise
  */
-bool MPU6050_TestConnection() {
+bool MPU6050_TestConnection() 
+{
     if(MPU6050_GetDeviceID() == 0x34) //0b110100; 8-bit representation in hex = 0x34
       return TRUE;
     else
@@ -67,7 +74,7 @@ bool MPU6050_TestConnection() {
 uint8_t MPU6050_GetDeviceID()
 {
     uint8_t tmp;
-    ReadBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_WHO_AM_I, MPU6050_WHO_AM_I_BIT, MPU6050_WHO_AM_I_LENGTH, &tmp);
+    MPU6050_ReadBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_WHO_AM_I, MPU6050_WHO_AM_I_BIT, MPU6050_WHO_AM_I_LENGTH, &tmp);
     return tmp; 
 }
 /** Set clock source setting.
@@ -102,7 +109,7 @@ uint8_t MPU6050_GetDeviceID()
  */
 void MPU6050_SetClockSource(uint8_t source) 
 {
-    WriteBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_CLKSEL_BIT, MPU6050_PWR1_CLKSEL_LENGTH, source);
+    MPU6050_WriteBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_CLKSEL_BIT, MPU6050_PWR1_CLKSEL_LENGTH, source);
 }
 
 /** Set full-scale gyroscope range.
@@ -115,7 +122,7 @@ void MPU6050_SetClockSource(uint8_t source)
  */
 void MPU6050_SetFullScaleGyroRange(uint8_t range) 
 {
-    WriteBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG, MPU6050_GCONFIG_FS_SEL_BIT, MPU6050_GCONFIG_FS_SEL_LENGTH, range);
+    MPU6050_WriteBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG, MPU6050_GCONFIG_FS_SEL_BIT, MPU6050_GCONFIG_FS_SEL_LENGTH, range);
 }
 
 // GYRO_CONFIG register
@@ -140,7 +147,7 @@ void MPU6050_SetFullScaleGyroRange(uint8_t range)
 uint8_t MPU6050_GetFullScaleGyroRange() 
 {
     uint8_t tmp;
-    ReadBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG, MPU6050_GCONFIG_FS_SEL_BIT, MPU6050_GCONFIG_FS_SEL_LENGTH, &tmp);
+    MPU6050_ReadBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG, MPU6050_GCONFIG_FS_SEL_BIT, MPU6050_GCONFIG_FS_SEL_LENGTH, &tmp);
     return tmp;
 }
 /** Get full-scale accelerometer range.
@@ -163,7 +170,7 @@ uint8_t MPU6050_GetFullScaleGyroRange()
 uint8_t MPU6050_GetFullScaleAccelRange() 
 {
     uint8_t tmp;
-    ReadBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG, MPU6050_ACONFIG_AFS_SEL_BIT, MPU6050_ACONFIG_AFS_SEL_LENGTH, &tmp);
+    MPU6050_ReadBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG, MPU6050_ACONFIG_AFS_SEL_BIT, MPU6050_ACONFIG_AFS_SEL_LENGTH, &tmp);
     return tmp;
 }
 /** Set full-scale accelerometer range.
@@ -172,7 +179,7 @@ uint8_t MPU6050_GetFullScaleAccelRange()
  */
 void MPU6050_SetFullScaleAccelRange(uint8_t range) 
 {
-    WriteBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG, MPU6050_ACONFIG_AFS_SEL_BIT, MPU6050_ACONFIG_AFS_SEL_LENGTH, range);
+    MPU6050_WriteBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG, MPU6050_ACONFIG_AFS_SEL_BIT, MPU6050_ACONFIG_AFS_SEL_LENGTH, range);
 }
 
 /** Get sleep mode status.
@@ -189,7 +196,7 @@ void MPU6050_SetFullScaleAccelRange(uint8_t range)
 bool MPU6050_GetSleepModeStatus() 
 {
     uint8_t tmp;
-    ReadBit(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, &tmp);
+    MPU6050_ReadBit(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, &tmp);
     if(tmp == 0x00)
       return FALSE;
     else
@@ -201,8 +208,9 @@ bool MPU6050_GetSleepModeStatus()
  * @see MPU6050_RA_PWR_MGMT_1
  * @see MPU6050_PWR1_SLEEP_BIT
  */
-void MPU6050_SetSleepModeStatus(FunctionalState NewState) {
-    WriteBit(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, NewState);
+void MPU6050_SetSleepModeStatus(FunctionalState NewState) 
+{
+    MPU6050_WriteBit(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, NewState);
 }
 
 /** Get raw 6-axis motion sensor readings (accel/gyro).
@@ -213,7 +221,7 @@ void MPU6050_SetSleepModeStatus(FunctionalState NewState) {
 void MPU6050_GetRawAccelGyro(s16* AccelGyro) 
 {
     u8 tmpBuffer[14]; 
-    MPU6050_I2C_BufferRead(MPU6050_DEFAULT_ADDRESS, tmpBuffer, MPU6050_RA_ACCEL_XOUT_H, 14); // Hari
+    MPU6050_I2C_BufferRead(MPU6050_DEFAULT_ADDRESS, tmpBuffer, MPU6050_RA_ACCEL_XOUT_H, 14); 
     /* Get acceleration */
     for(int i=0; i<3; i++) 
       AccelGyro[i]=((s16)((u16)tmpBuffer[2*i] << 8) + tmpBuffer[2*i+1]);
@@ -230,7 +238,8 @@ void MPU6050_GetRawAccelGyro(s16* AccelGyro)
  * @param length Number of bits to write (not more than 8)
  * @param data Right-aligned value to write
  */
-void WriteBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data) {
+void MPU6050_WriteBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data) 
+{
     //      010 value to write
     // 76543210 bit numbers
     //    xxx   args: bitStart=4, length=3
@@ -239,13 +248,13 @@ void WriteBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t len
     // 10100011 original & ~mask
     // 10101011 masked | value
     uint8_t tmp;
-    MPU6050_I2C_BufferRead(MPU6050_DEFAULT_ADDRESS, &tmp, regAddr, 1);  
+    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);  
     uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
     data <<= (bitStart - length + 1); // shift data into correct position
     data &= mask; // zero all non-important bits in data
     tmp &= ~(mask); // zero all important bits in existing byte
     tmp |= data; // combine data with existing byte
-    MPU6050_I2C_ByteWrite(MPU6050_DEFAULT_ADDRESS,&tmp,regAddr);   
+    MPU6050_I2C_ByteWrite(slaveAddr,&tmp,regAddr);   
 }
 /** write a single bit in an 8-bit device register.
  * @param slaveAddr I2C slave device address
@@ -253,12 +262,12 @@ void WriteBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t len
  * @param bitNum Bit position to write (0-7)
  * @param value New bit value to write
  */
-void WriteBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data) 
+void MPU6050_WriteBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data) 
 {
     uint8_t tmp;
-    MPU6050_I2C_BufferRead(MPU6050_DEFAULT_ADDRESS, &tmp, regAddr, 1);  
+    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);  
     tmp = (data != 0) ? (tmp | (1 << bitNum)) : (tmp & ~(1 << bitNum));
-    MPU6050_I2C_ByteWrite(MPU6050_DEFAULT_ADDRESS,&tmp,regAddr); 
+    MPU6050_I2C_ByteWrite(slaveAddr,&tmp,regAddr); 
 }
 /** Read multiple bits from an 8-bit device register.
  * @param slaveAddr I2C slave device address
@@ -268,7 +277,7 @@ void WriteBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data)
  * @param data Container for right-aligned value (i.e. '101' read from any bitStart position will equal 0x05)
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in readTimeout)
  */
-void ReadBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t *data) 
+void MPU6050_ReadBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t *data) 
 {
     // 01101001 read byte
     // 76543210 bit numbers
@@ -276,7 +285,7 @@ void ReadBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t leng
     //    010   masked
     //   -> 010 shifted
     uint8_t tmp;
-    MPU6050_I2C_BufferRead(MPU6050_DEFAULT_ADDRESS, &tmp, regAddr, 1); 
+    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1); 
     uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
     tmp &= mask;
     tmp >>= (bitStart - length + 1);
@@ -290,10 +299,10 @@ void ReadBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t leng
  * @param data Container for single bit value
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in readTimeout)
  */
-void ReadBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t *data) 
+void MPU6050_ReadBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t *data) 
 {
     uint8_t tmp;
-    MPU6050_I2C_BufferRead(MPU6050_DEFAULT_ADDRESS, &tmp, regAddr, 1);  
+    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);  
     *data = tmp & (1 << bitNum);
 }
 
@@ -302,7 +311,7 @@ void ReadBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t *data)
 * @param  None
 * @return None
 */
-void MPU6050_I2C_Init(void)
+void MPU6050_I2C_Init()
 {
   I2C_InitTypeDef  I2C_InitStructure;
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -454,3 +463,6 @@ void MPU6050_I2C_BufferRead(u8 slaveAddr, u8* pBuffer, u8 readAddr, u16 NumByteT
 //  EXT_CRT_SECTION();
 
 }
+/**
+ * @}
+ */ /* end of group MPU6050_Library */
