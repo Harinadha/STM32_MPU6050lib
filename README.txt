@@ -1,5 +1,5 @@
 ============================================================================
-Note: For More details, please visit: http://harinadha.wordpress.com
+    For More details, visit: http://harinadha.wordpress.com
 ============================================================================
 
 The MPU6050 I2C Device Library provideS simple and intuitive interfaces to MPU6050 I2C device on ARM 32-bit STM32F103xx family of microcontrollers.It has the I2C bit- and byte-level communication for complete coverage of all functionality described by MPU6050 documentation.
