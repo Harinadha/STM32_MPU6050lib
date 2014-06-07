@@ -48,7 +48,7 @@ void MPU6050_Initialize()
     MPU6050_SetClockSource(MPU6050_CLOCK_PLL_XGYRO);
     MPU6050_SetFullScaleGyroRange(MPU6050_GYRO_FS_250);
     MPU6050_SetFullScaleAccelRange(MPU6050_ACCEL_FS_2);
-    MPU6050_SetSleepModeStatus(DISABLE); 
+    MPU6050_SetSleepModeStatus(DISABLE);
 }
 
 /** Verify the I2C connection.
@@ -200,7 +200,7 @@ bool MPU6050_GetSleepModeStatus()
     if(tmp == 0x00)
       return FALSE;
     else
-      return TRUE;    
+      return TRUE;
 }
 /** Set sleep mode status.
  * @param enabled New sleep mode enabled status
@@ -220,14 +220,14 @@ void MPU6050_SetSleepModeStatus(FunctionalState NewState)
  */
 void MPU6050_GetRawAccelGyro(s16* AccelGyro) 
 {
-    u8 tmpBuffer[14]; 
-    MPU6050_I2C_BufferRead(MPU6050_DEFAULT_ADDRESS, tmpBuffer, MPU6050_RA_ACCEL_XOUT_H, 14); 
+    u8 tmpBuffer[14];
+    MPU6050_I2C_BufferRead(MPU6050_DEFAULT_ADDRESS, tmpBuffer, MPU6050_RA_ACCEL_XOUT_H, 14);
     /* Get acceleration */
-    for(int i=0; i<3; i++) 
+    for(int i=0; i<3; i++)
       AccelGyro[i]=((s16)((u16)tmpBuffer[2*i] << 8) + tmpBuffer[2*i+1]);
    /* Get Angular rate */
     for(int i=4; i<7; i++)
-      AccelGyro[i-1]=((s16)((u16)tmpBuffer[2*i] << 8) + tmpBuffer[2*i+1]);        
+      AccelGyro[i-1]=((s16)((u16)tmpBuffer[2*i] << 8) + tmpBuffer[2*i+1]);
 
 }
 
@@ -248,13 +248,13 @@ void MPU6050_WriteBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uin
     // 10100011 original & ~mask
     // 10101011 masked | value
     uint8_t tmp;
-    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);  
+    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);
     uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
     data <<= (bitStart - length + 1); // shift data into correct position
     data &= mask; // zero all non-important bits in data
     tmp &= ~(mask); // zero all important bits in existing byte
     tmp |= data; // combine data with existing byte
-    MPU6050_I2C_ByteWrite(slaveAddr,&tmp,regAddr);   
+    MPU6050_I2C_ByteWrite(slaveAddr,&tmp,regAddr);
 }
 /** write a single bit in an 8-bit device register.
  * @param slaveAddr I2C slave device address
@@ -265,7 +265,7 @@ void MPU6050_WriteBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uin
 void MPU6050_WriteBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data) 
 {
     uint8_t tmp;
-    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);  
+    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);
     tmp = (data != 0) ? (tmp | (1 << bitNum)) : (tmp & ~(1 << bitNum));
     MPU6050_I2C_ByteWrite(slaveAddr,&tmp,regAddr); 
 }
@@ -285,7 +285,7 @@ void MPU6050_ReadBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint
     //    010   masked
     //   -> 010 shifted
     uint8_t tmp;
-    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1); 
+    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);
     uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
     tmp &= mask;
     tmp >>= (bitStart - length + 1);
@@ -302,7 +302,7 @@ void MPU6050_ReadBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint
 void MPU6050_ReadBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t *data) 
 {
     uint8_t tmp;
-    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);  
+    MPU6050_I2C_BufferRead(slaveAddr, &tmp, regAddr, 1);
     *data = tmp & (1 << bitNum);
 }
 
@@ -336,7 +336,7 @@ void MPU6050_I2C_Init()
   
   /* Apply I2C configuration after enabling it */
   I2C_Init(MPU6050_I2C, &I2C_InitStructure);
-  /* I2C Peripheral Enable */  
+  /* I2C Peripheral Enable */
   I2C_Cmd(MPU6050_I2C, ENABLE);
 
 }
@@ -406,7 +406,7 @@ void MPU6050_I2C_BufferRead(u8 slaveAddr, u8* pBuffer, u8 readAddr, u16 NumByteT
   while(!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_MODE_SELECT));
 
   /* Send MPU6050 address for write */
-  I2C_Send7bitAddress(MPU6050_I2C, slaveAddr, I2C_Direction_Transmitter); 
+  I2C_Send7bitAddress(MPU6050_I2C, slaveAddr, I2C_Direction_Transmitter);
 
   /* Test on EV6 and clear it */
   while(!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));

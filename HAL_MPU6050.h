@@ -32,9 +32,9 @@ THE SOFTWARE.
 #define __HAL_MPU6050_H
 
 #ifdef __cplusplus
- extern "C" {
-#endif 
-  
+extern "C" {
+#endif
+
 /* Includes */
 #include "stm32f10x.h"
 
@@ -55,6 +55,9 @@ THE SOFTWARE.
 *@}
 */ /* end of group MPU6050_I2C_Define */ 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __HAL___MPU6050_H */
 
