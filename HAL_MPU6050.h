@@ -32,8 +32,7 @@
 #define __HAL_MPU6050_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Includes */

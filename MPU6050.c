@@ -57,10 +57,7 @@ void MPU6050_Initialize()
  */
 bool MPU6050_TestConnection()
 {
-    if (MPU6050_GetDeviceID() == 0x34) //0b110100; 8-bit representation in hex = 0x34
-        return TRUE;
-    else
-        return FALSE;
+    return MPU6050_GetDeviceID() == 0x34 ? TRUE : FALSE; //0b110100; 8-bit representation in hex = 0x34
 }
 // WHO_AM_I register
 
@@ -77,6 +74,7 @@ uint8_t MPU6050_GetDeviceID()
     MPU6050_ReadBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_WHO_AM_I, MPU6050_WHO_AM_I_BIT, MPU6050_WHO_AM_I_LENGTH, &tmp);
     return tmp;
 }
+
 /** Set clock source setting.
  * An internal 8MHz oscillator, gyroscope based clock, or external sources can
  * be selected as the MPU-60X0 clock source. When the internal 8 MHz oscillator
@@ -150,6 +148,7 @@ uint8_t MPU6050_GetFullScaleGyroRange()
     MPU6050_ReadBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG, MPU6050_GCONFIG_FS_SEL_BIT, MPU6050_GCONFIG_FS_SEL_LENGTH, &tmp);
     return tmp;
 }
+
 /** Get full-scale accelerometer range.
  * The FS_SEL parameter allows setting the full-scale range of the accelerometer
  * sensors, as described in the table below.
@@ -173,6 +172,7 @@ uint8_t MPU6050_GetFullScaleAccelRange()
     MPU6050_ReadBits(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG, MPU6050_ACONFIG_AFS_SEL_BIT, MPU6050_ACONFIG_AFS_SEL_LENGTH, &tmp);
     return tmp;
 }
+
 /** Set full-scale accelerometer range.
  * @param range New full-scale accelerometer range setting
  * @see MPU6050_GetFullScaleAccelRange()
@@ -197,11 +197,9 @@ bool MPU6050_GetSleepModeStatus()
 {
     uint8_t tmp;
     MPU6050_ReadBit(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, &tmp);
-    if (tmp == 0x00)
-        return FALSE;
-    else
-        return TRUE;
+    return tmp == 0x00 ? FALSE : TRUE;
 }
+
 /** Set sleep mode status.
  * @param enabled New sleep mode enabled status
  * @see MPU6050_GetSleepModeStatus()
@@ -256,6 +254,7 @@ void MPU6050_WriteBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uin
     tmp |= data; // combine data with existing byte
     MPU6050_I2C_ByteWrite(slaveAddr, &tmp, regAddr);
 }
+
 /** write a single bit in an 8-bit device register.
  * @param slaveAddr I2C slave device address
  * @param regAddr Register regAddr to write to
@@ -269,6 +268,7 @@ void MPU6050_WriteBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_
     tmp = (data != 0) ? (tmp | (1 << bitNum)) : (tmp & ~(1 << bitNum));
     MPU6050_I2C_ByteWrite(slaveAddr, &tmp, regAddr);
 }
+
 /** Read multiple bits from an 8-bit device register.
  * @param slaveAddr I2C slave device address
  * @param regAddr Register regAddr to read from
@@ -338,7 +338,6 @@ void MPU6050_I2C_Init()
     I2C_Init(MPU6050_I2C, &I2C_InitStructure);
     /* I2C Peripheral Enable */
     I2C_Cmd(MPU6050_I2C, ENABLE);
-
 }
 
 /**
@@ -350,41 +349,36 @@ void MPU6050_I2C_Init()
  */
 void MPU6050_I2C_ByteWrite(u8 slaveAddr, u8* pBuffer, u8 writeAddr)
 {
-//  ENTR_CRT_SECTION();
+    // ENTR_CRT_SECTION();
 
     /* Send START condition */
     I2C_GenerateSTART(MPU6050_I2C, ENABLE);
 
     /* Test on EV5 and clear it */
-    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_MODE_SELECT))
-        ;
+    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_MODE_SELECT));
 
     /* Send MPU6050 address for write */
     I2C_Send7bitAddress(MPU6050_I2C, slaveAddr, I2C_Direction_Transmitter);
 
     /* Test on EV6 and clear it */
-    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
-        ;
+    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
 
     /* Send the MPU6050's internal address to write to */
     I2C_SendData(MPU6050_I2C, writeAddr);
 
     /* Test on EV8 and clear it */
-    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-        ;
+    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 
     /* Send the byte to be written */
     I2C_SendData(MPU6050_I2C, *pBuffer);
 
     /* Test on EV8 and clear it */
-    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-        ;
+    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 
     /* Send STOP condition */
     I2C_GenerateSTOP(MPU6050_I2C, ENABLE);
 
     // EXT_CRT_SECTION();
-
 }
 
 /**
@@ -395,28 +389,24 @@ void MPU6050_I2C_ByteWrite(u8 slaveAddr, u8* pBuffer, u8 writeAddr)
  * @param  NumByteToRead : number of bytes to read from the MPU6050 ( NumByteToRead >1  only for the Mgnetometer readinf).
  * @return None
  */
-
 void MPU6050_I2C_BufferRead(u8 slaveAddr, u8* pBuffer, u8 readAddr, u16 NumByteToRead)
 {
     // ENTR_CRT_SECTION();
 
     /* While the bus is busy */
-    while (I2C_GetFlagStatus(MPU6050_I2C, I2C_FLAG_BUSY))
-        ;
+    while (I2C_GetFlagStatus(MPU6050_I2C, I2C_FLAG_BUSY));
 
     /* Send START condition */
     I2C_GenerateSTART(MPU6050_I2C, ENABLE);
 
     /* Test on EV5 and clear it */
-    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_MODE_SELECT))
-        ;
+    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_MODE_SELECT));
 
     /* Send MPU6050 address for write */
     I2C_Send7bitAddress(MPU6050_I2C, slaveAddr, I2C_Direction_Transmitter);
 
     /* Test on EV6 and clear it */
-    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
-        ;
+    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
 
     /* Clear EV6 by setting again the PE bit */
     I2C_Cmd(MPU6050_I2C, ENABLE);
@@ -425,22 +415,19 @@ void MPU6050_I2C_BufferRead(u8 slaveAddr, u8* pBuffer, u8 readAddr, u16 NumByteT
     I2C_SendData(MPU6050_I2C, readAddr);
 
     /* Test on EV8 and clear it */
-    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-        ;
+    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 
     /* Send STRAT condition a second time */
     I2C_GenerateSTART(MPU6050_I2C, ENABLE);
 
     /* Test on EV5 and clear it */
-    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_MODE_SELECT))
-        ;
+    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_MODE_SELECT));
 
     /* Send MPU6050 address for read */
     I2C_Send7bitAddress(MPU6050_I2C, slaveAddr, I2C_Direction_Receiver);
 
     /* Test on EV6 and clear it */
-    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
-        ;
+    while (!I2C_CheckEvent(MPU6050_I2C, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED));
 
     /* While there is data to be read */
     while (NumByteToRead)
@@ -470,8 +457,7 @@ void MPU6050_I2C_BufferRead(u8 slaveAddr, u8* pBuffer, u8 readAddr, u16 NumByteT
 
     /* Enable Acknowledgement to be ready for another reception */
     I2C_AcknowledgeConfig(MPU6050_I2C, ENABLE);
-//  EXT_CRT_SECTION();
-
+    // EXT_CRT_SECTION();
 }
 /**
  * @}

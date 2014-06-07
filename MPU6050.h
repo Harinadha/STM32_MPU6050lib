@@ -32,8 +32,7 @@
 #define _MPU6050_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Includes */
